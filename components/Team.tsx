@@ -1,123 +1,106 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Code2, Heart, Trophy, Star, Users, Lightbulb } from "lucide-react";
+import { Code2, Heart, Trophy, Star, Users, Lightbulb, ArrowUpRight } from "lucide-react";
 import PhotoPlaceholder from "./PhotoPlaceholder";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("opacity-100", "translate-y-0");
-          el.classList.remove("opacity-0", "translate-y-8");
-        }
-      },
-      { threshold: 0.1 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  useEffect(()=>{
+    const el=ref.current; if(!el) return;
+    const obs=new IntersectionObserver(([e])=>{ if(e.isIntersecting) el.classList.add("visible"); },{threshold:0.1});
+    obs.observe(el); return()=>obs.disconnect();
+  },[]);
   return ref;
 }
 
-const achievements = [
-  { icon: Trophy, text: "Founded nonprofit while maintaining high academic standing", color: "text-amber-500" },
-  { icon: Heart, text: "Raised $3,500+ through community fundraising and outreach", color: "text-rose-500" },
-  { icon: Code2, text: "Personally built and maintain Coding4Kidz digital presence", color: "text-blue-500" },
-  { icon: Users, text: "Coordinated with international organizations across 3 countries", color: "text-purple-500" },
-  { icon: Star, text: "Secured verified partnership with Rotary International", color: "text-teal-500" },
-  { icon: Lightbulb, text: "Designed a self-sustaining model for long-term impact", color: "text-green-500" },
+const achievements=[
+  {icon:Trophy,  text:"Founded nonprofit while maintaining high academic standing",color:"text-amber-400"},
+  {icon:Heart,   text:"Raised $3,500+ through community fundraising and outreach", color:"text-rose-400"},
+  {icon:Code2,   text:"Personally built and maintain Coding4Kidz digital presence", color:"text-blue-400"},
+  {icon:Users,   text:"Coordinated with international organizations across 3 countries",color:"text-purple-400"},
+  {icon:Star,    text:"Secured verified partnership with Rotary International",      color:"text-cyan-400"},
+  {icon:Lightbulb,text:"Designed a self-sustaining model for long-term impact",      color:"text-emerald-400"},
 ];
 
-const founders = [
+const founders=[
   {
-    name: "Manas Goel",
-    role: "Co-Founder & Co-President",
-    bio: "A passionate advocate for technology education, Manas spearheads fundraising strategy, donor outreach, and international partnerships. From cold-emailing organizations to personally presenting to community groups, he has been the driving force behind Coding4Kidz's financial growth and global reach.",
-    skills: ["Fundraising Strategy", "Partnership Development", "Community Outreach", "Project Management"],
-    gradient: "from-blue-600 to-purple-600",
-    bgGlow: "from-blue-500/20 to-purple-500/20",
-    photoLabel: "Manas Goel · Co-President",
+    name:"Manas Goel",
+    role:"Co-Founder & Co-President",
+    bio:"Manas spearheads fundraising strategy, donor outreach, and international partnerships. From cold-emailing organizations to personally presenting to community groups, he's been the driving force behind Coding4Kidz's financial growth.",
+    skills:["Fundraising Strategy","Partnership Development","Community Outreach","Project Management"],
+    gradient:"from-blue-600 to-indigo-600",
+    accent:"border-blue-500/20 hover:border-blue-500/40 hover:shadow-blue-500/10",
+    tag:"Founder",
+    photoLabel:"Manas Goel · Co-President",
   },
   {
-    name: "Kush Shah",
-    role: "Co-Founder & Co-President",
-    bio: "The operational engine behind Coding4Kidz, Kush manages organizational structure, vets partner organizations, tracks impact metrics, and ensures every dollar is deployed effectively. His attention to detail and commitment to transparency has built lasting trust with donors and partners alike.",
-    skills: ["Operations Management", "Impact Assessment", "Partner Vetting", "Strategic Planning"],
-    gradient: "from-purple-600 to-teal-600",
-    bgGlow: "from-purple-500/20 to-teal-500/20",
-    photoLabel: "Kush Shah · Co-President",
+    name:"Kush Shah",
+    role:"Co-Founder & Co-President",
+    bio:"Kush manages organizational structure, vets partner organizations, tracks impact metrics, and ensures every dollar is deployed effectively. His commitment to transparency has built lasting trust with donors and partners worldwide.",
+    skills:["Operations Management","Impact Assessment","Partner Vetting","Strategic Planning"],
+    gradient:"from-purple-600 to-cyan-600",
+    accent:"border-purple-500/20 hover:border-purple-500/40 hover:shadow-purple-500/10",
+    tag:"Founder",
+    photoLabel:"Kush Shah · Co-President",
   },
 ];
 
 export default function Team() {
-  const ref1 = useReveal();
-  const ref2 = useReveal();
-  const ref3 = useReveal();
-
+  const r1=useReveal(); const r2=useReveal(); const r3=useReveal();
   return (
-    <section id="team" className="relative py-32 bg-[#0a0a14] overflow-hidden">
-      <div className="absolute inset-0 dots-bg opacity-20" />
-      <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-purple-600/8 blur-3xl" />
-      <div className="absolute bottom-1/4 left-0 w-72 h-72 rounded-full bg-blue-600/8 blur-3xl" />
+    <section id="team" className="relative py-28 overflow-hidden" style={{background:"#050510"}}>
+      <div className="absolute inset-0 dots-bg opacity-20"/>
+      <div className="absolute top-0 left-0 right-0 h-px section-divider"/>
+      <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-purple-600/6 blur-3xl"/>
+      <div className="absolute bottom-1/4 left-0 w-72 h-72 rounded-full bg-blue-600/6 blur-3xl"/>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
-        <div ref={ref1} className="text-center mb-20 opacity-0 translate-y-8 transition-all duration-700">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-semibold mb-6">
-            <Users className="w-4 h-4" />
-            The Founders
-          </div>
+
+        {/* Header */}
+        <div ref={r1} className="text-center mb-20 reveal">
+          <div className="chip mb-6"><Users className="w-3.5 h-3.5 text-purple-400"/><span className="text-purple-300">The Founders</span></div>
           <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
             Meet the <span className="gradient-text">Co-Presidents</span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Two high school students who decided that youth is not a limitation — it&apos;s a superpower. We built Coding4Kidz from nothing and turned it into a global force for digital equity.
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            Two high school students who decided youth is not a limitation — it&apos;s a superpower. Built Coding4Kidz from nothing into a global force for digital equity.
           </p>
         </div>
 
-        {/* Co-president cards */}
-        <div ref={ref2} className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 opacity-0 translate-y-8 transition-all duration-700 max-w-4xl mx-auto">
-          {founders.map((person, i) => (
-            <div key={i} className="relative group">
-              {/* Glow background */}
-              <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${person.bgGlow} blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+        {/* Founder cards */}
+        <div ref={r2} className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20 max-w-4xl mx-auto reveal">
+          {founders.map((p,i)=>(
+            <div key={i} className={`group relative bg-[#0b0b1a] rounded-2xl border transition-all duration-400 hover:-translate-y-2 hover:shadow-2xl sheen ${p.accent}`}>
+              {/* Top gradient bar */}
+              <div className={`h-0.5 w-full rounded-t-2xl bg-gradient-to-r ${p.gradient}`}/>
 
-              <div className="relative glass rounded-3xl p-8 border border-white/5 card-hover">
-                {/* Photo placeholder */}
-                <div className="relative w-32 h-32 mx-auto mb-6">
-                  <PhotoPlaceholder
-                    label={person.photoLabel}
-                    aspectRatio=""
-                    className="w-32 h-32 rounded-2xl"
-                    dark
-                  />
-                  <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                    <Star className="w-3 h-3 text-white" />
+              <div className="p-8">
+                {/* Photo + badge */}
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="relative flex-shrink-0">
+                    <PhotoPlaceholder label={p.photoLabel} aspectRatio="" className="w-24 h-24 rounded-2xl" dark/>
+                    <div className={`absolute -bottom-1.5 -right-1.5 px-2 py-0.5 rounded-md bg-gradient-to-r ${p.gradient} text-white text-xs font-bold shadow-lg`}>
+                      {p.tag}
+                    </div>
                   </div>
+                  <div className="flex-1 min-w-0 pt-1">
+                    <h3 className="text-xl font-black text-white mb-0.5">{p.name}</h3>
+                    <p className="text-slate-400 text-xs font-medium mb-2">{p.role}</p>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"/>
+                      <span className="text-emerald-400 text-xs font-semibold">High School Student</span>
+                    </div>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0"/>
                 </div>
 
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-black text-white mb-1">{person.name}</h3>
-                  <p className="text-gray-400 text-sm font-medium">{person.role}</p>
-                  <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/20 text-blue-300 text-xs font-semibold">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                    High School Student
-                  </div>
-                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">{p.bio}</p>
 
-                <p className="text-gray-400 text-sm leading-relaxed text-center mb-6">
-                  {person.bio}
-                </p>
-
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {person.skills.map((skill, j) => (
-                    <span key={j} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs font-medium">
-                      {skill}
+                <div className="flex flex-wrap gap-1.5">
+                  {p.skills.map((s,j)=>(
+                    <span key={j} className="px-2.5 py-1 rounded-lg bg-white/4 border border-white/8 text-slate-300 text-xs font-medium">
+                      {s}
                     </span>
                   ))}
                 </div>
@@ -126,33 +109,32 @@ export default function Team() {
           ))}
         </div>
 
-        {/* Shared achievements */}
-        <div ref={ref3} className="opacity-0 translate-y-8 transition-all duration-700">
-          <h3 className="text-2xl md:text-3xl font-black text-white text-center mb-10">
+        {/* Achievements */}
+        <div ref={r3} className="reveal">
+          <h3 className="text-2xl font-black text-white text-center mb-10">
             What We&apos;ve <span className="gradient-text">Accomplished</span>
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievements.map((a, i) => (
-              <div key={i} className="flex items-start gap-4 glass rounded-xl p-5 border border-white/5 card-hover">
-                <div className={`flex-shrink-0 ${a.color}`}>
-                  <a.icon className="w-5 h-5 mt-0.5" />
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed">{a.text}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {achievements.map((a,i)=>(
+              <div key={i} className="flex items-start gap-4 bg-[#0b0b1a] rounded-xl p-5 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-0.5 sheen">
+                <div className={`flex-shrink-0 mt-0.5 ${a.color}`}><a.icon className="w-4 h-4"/></div>
+                <p className="text-slate-300 text-sm leading-relaxed">{a.text}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Quote / philosophy */}
-        <div className="mt-20 text-center">
-          <div className="relative inline-block max-w-3xl">
-            <div className="text-6xl text-blue-500/20 font-serif absolute -top-4 -left-4">&ldquo;</div>
-            <p className="text-2xl md:text-3xl font-bold text-white italic leading-relaxed px-8">
+        {/* Quote */}
+        <div className="mt-20 relative">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5 border border-white/5"/>
+          <div className="relative p-10 md:p-16 text-center">
+            <div className="text-5xl text-blue-500/15 font-serif leading-none mb-4">&ldquo;</div>
+            <p className="text-xl md:text-2xl font-bold text-white italic leading-relaxed max-w-3xl mx-auto">
               We didn&apos;t have millions or years of experience. We had a computer, an internet connection, and an unwillingness to accept that geography should determine destiny.
             </p>
-            <div className="text-6xl text-blue-500/20 font-serif absolute -bottom-8 -right-4">&rdquo;</div>
+            <div className="text-5xl text-blue-500/15 font-serif leading-none mt-4">&rdquo;</div>
+            <p className="text-slate-500 mt-6 text-sm font-medium mono">Manas Goel & Kush Shah · Coding4Kidz · Class of 2026</p>
           </div>
-          <p className="text-gray-500 mt-8 font-medium">Manas Goel & Kush Shah · Coding4Kidz Co-Presidents</p>
         </div>
       </div>
     </section>

@@ -1,202 +1,193 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, Sparkles, Globe, Heart } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 
-function CountUp({ end, duration = 2000, suffix = "" }: { end: number; duration?: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
-
+/* ── Particle canvas ── */
+function ParticleField() {
+  const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started) {
-          setStarted(true);
-          const startTime = performance.now();
-          const tick = (now: number) => {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(eased * end));
-            if (progress < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [end, duration, started]);
+    const c = ref.current; if (!c) return;
+    const ctx = c.getContext("2d"); if (!ctx) return;
+    const resize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
+    resize();
+    window.addEventListener("resize", resize);
 
+    const colors = ["#3b82f6","#a855f7","#06b6d4","#ec4899"];
+    const pts = Array.from({length:90}, () => ({
+      x: Math.random()*c.width, y: Math.random()*c.height,
+      vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35,
+      r:Math.random()*1.5+.5,
+      col:colors[Math.floor(Math.random()*colors.length)],
+      a:Math.random()*.5+.1,
+    }));
+
+    let id:number;
+    const draw = () => {
+      ctx.clearRect(0,0,c.width,c.height);
+      pts.forEach((p,i) => {
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=c.width; if(p.x>c.width)p.x=0;
+        if(p.y<0)p.y=c.height; if(p.y>c.height)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.col; ctx.globalAlpha=p.a; ctx.fill();
+        for(let j=i+1;j<pts.length;j++){
+          const d=Math.hypot(p.x-pts[j].x,p.y-pts[j].y);
+          if(d<110){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(pts[j].x,pts[j].y);
+            ctx.strokeStyle=p.col; ctx.globalAlpha=(1-d/110)*.12; ctx.lineWidth=.6; ctx.stroke(); }
+        }
+        ctx.globalAlpha=1;
+      });
+      id=requestAnimationFrame(draw);
+    };
+    draw();
+    return ()=>{ cancelAnimationFrame(id); window.removeEventListener("resize",resize); };
+  },[]);
+  return <canvas ref={ref} className="absolute inset-0 pointer-events-none" />;
+}
+
+/* ── Typewriter ── */
+function Typewriter({ words }: { words: string[] }) {
+  const [idx, setIdx] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  useEffect(() => {
+    const word = words[idx];
+    const speed = deleting ? 40 : 80;
+    const timer = setTimeout(() => {
+      if (!deleting) {
+        setDisplayed(word.slice(0, displayed.length+1));
+        if (displayed.length+1 === word.length) setTimeout(()=>setDeleting(true), 1800);
+      } else {
+        setDisplayed(word.slice(0, displayed.length-1));
+        if (displayed.length-1 === 0) { setDeleting(false); setIdx((idx+1)%words.length); }
+      }
+    }, speed);
+    return ()=>clearTimeout(timer);
+  },[displayed, deleting, idx, words]);
   return (
-    <span ref={ref}>
-      {count.toLocaleString()}
-      {suffix}
+    <span className="gradient-text-cyber">
+      {displayed}<span className="animate-blink">|</span>
     </span>
   );
 }
 
-export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles: Array<{
-      x: number; y: number; vx: number; vy: number;
-      size: number; opacity: number; color: string;
-    }> = [];
-
-    const colors = ["#1a56db", "#7e3af2", "#0694a2", "#5145cd"];
-
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.5 + 0.1,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      });
-    }
-
-    let animId: number;
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p, i) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.opacity;
-        ctx.fill();
-
-        particles.slice(i + 1).forEach((p2) => {
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 100) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = p.color;
-            ctx.globalAlpha = (1 - dist / 100) * 0.15;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        });
-        ctx.globalAlpha = 1;
-      });
-      animId = requestAnimationFrame(animate);
+/* ── Stat counter ── */
+function Stat({ prefix="", end, suffix="", label }: {prefix?:string;end:number;suffix?:string;label:string}) {
+  const [n, setN] = useState(0);
+  const [go, setGo] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const obs = new IntersectionObserver(([e])=>{ if(e.isIntersecting) setGo(true); },{threshold:.5});
+    if(ref.current) obs.observe(ref.current);
+    return ()=>obs.disconnect();
+  },[]);
+  useEffect(()=>{
+    if(!go) return;
+    const dur=1600; const start=performance.now();
+    const tick=(now:number)=>{
+      const p=Math.min((now-start)/dur,1);
+      setN(Math.floor((1-Math.pow(1-p,4))*end));
+      if(p<1) requestAnimationFrame(tick); else setN(end);
     };
-    animate();
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
+    requestAnimationFrame(tick);
+  },[go,end]);
   return (
-    <section className="relative min-h-screen hero-gradient flex items-center overflow-hidden">
-      {/* Animated particle canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
+    <div ref={ref} className="text-center">
+      <div className="text-3xl md:text-4xl font-black text-white tracking-tight">
+        {prefix}{n.toLocaleString()}{suffix}
+      </div>
+      <div className="text-xs text-slate-400 font-medium mt-1 uppercase tracking-widest">{label}</div>
+    </div>
+  );
+}
+
+export default function Hero() {
+  return (
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{background:"#030309"}}>
+      <ParticleField />
+
+      {/* Ambient orbs */}
+      <div className="absolute top-1/4 left-1/5 w-[500px] h-[500px] rounded-full bg-blue-600/8 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/5 w-[400px] h-[400px] rounded-full bg-purple-600/8 blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-cyan-600/5 blur-[140px] pointer-events-none" />
+
+      {/* Perspective grid floor */}
+      <div className="absolute bottom-0 left-0 right-0 h-[50vh] perspective-grid overflow-hidden pointer-events-none">
+        <div className="perspective-plane w-full h-[200%]" />
+      </div>
+
+      {/* Scanline sweep */}
+      <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent animate-scan pointer-events-none" />
 
       {/* Grid overlay */}
-      <div className="absolute inset-0 grid-bg opacity-40" />
+      <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
 
-      {/* Glowing orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-blue-600/10 blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-purple-600/10 blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-      <div className="absolute top-1/2 right-1/3 w-64 h-64 rounded-full bg-teal-600/8 blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 pt-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 pt-32 w-full">
         <div className="text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300 text-sm font-medium mb-8 animate-fadeInUp">
-            <Sparkles className="w-4 h-4" />
-            <span>Student-Led Nonprofit · Founded 2024</span>
+
+          {/* Status chip */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300 text-xs font-bold mb-10 mono uppercase tracking-widest animate-fadeInUp">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-400" />
+            </span>
+            STUDENT-LED NONPROFIT · FOUNDED 2025 · ACTIVE
           </div>
 
           {/* Main headline */}
-          <h1 className="hero-title text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-none tracking-tight animate-fadeInUp" style={{ animationDelay: "0.1s" }}>
-            Bridging the{" "}
-            <span className="gradient-text">Digital Divide</span>
-            <br />
-            <span className="text-white/90">One Child at a Time</span>
+          <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-black text-white leading-[0.95] tracking-tight mb-6 animate-fadeInUp" style={{animationDelay:"0.1s",opacity:0}}>
+            <span className="block">Bridging the</span>
+            <span className="block gradient-text text-glow-blue">Digital Divide</span>
+            <span className="block text-slate-300 text-4xl md:text-5xl lg:text-6xl font-bold mt-2">One Child at a Time</span>
           </h1>
 
-          {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed animate-fadeInUp" style={{ animationDelay: "0.2s" }}>
-            We are two high school students who built a nonprofit from the ground up —
-            fundraising to bring <span className="text-white font-semibold">world-class computer education</span> to
-            communities that need it most, from our hometown to Jalalabad, Afghanistan.
+          {/* Typewriter sub */}
+          <p className="text-xl md:text-2xl text-slate-400 mb-4 animate-fadeInUp" style={{animationDelay:"0.2s",opacity:0}}>
+            We are two high schoolers building a world where{" "}
           </p>
+          <div className="text-2xl md:text-3xl font-bold mb-12 animate-fadeInUp" style={{animationDelay:"0.25s",opacity:0}}>
+            <Typewriter words={[
+              "every kid can code.",
+              "ZIP codes don't limit destinies.",
+              "Afghanistan gets its computer labs.",
+              "students change the world.",
+              "technology education is universal.",
+            ]} />
+          </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
-            <a
-              href="#project"
-              className="btn-primary px-8 py-4 rounded-full text-white font-bold text-lg shadow-2xl shadow-blue-500/25"
-            >
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20 animate-fadeInUp" style={{animationDelay:"0.35s",opacity:0}}>
+            <a href="#project" className="btn-neon px-8 py-4 rounded-full text-white font-bold text-base flex items-center justify-center gap-2 shadow-2xl">
               <span>See Our Impact</span>
+              <ArrowRight className="w-4 h-4 relative z-10" />
             </a>
-            <a
-              href="#donate"
-              className="px-8 py-4 rounded-full border border-white/20 text-white font-semibold text-lg hover:bg-white/5 transition-all duration-300 hover:border-white/40"
-            >
+            <a href="#donate" className="btn-outline px-8 py-4 rounded-full text-white font-semibold text-base flex items-center justify-center gap-2">
+              <Zap className="w-4 h-4" />
               Support the Mission
             </a>
           </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto animate-fadeInUp" style={{ animationDelay: "0.4s" }}>
-            {[
-              { value: 3500, suffix: "+", prefix: "$", label: "Raised & Donated", icon: Heart, color: "from-blue-500 to-blue-700" },
-              { value: 15, suffix: "", prefix: "", label: "Computers Funded", icon: Globe, color: "from-purple-500 to-purple-700" },
-              { value: 200, suffix: "+", prefix: "", label: "Students to Benefit", icon: Sparkles, color: "from-teal-500 to-teal-700" },
-              { value: 9000, suffix: "", prefix: "$", label: "Total Project Value", icon: Heart, color: "from-indigo-500 to-indigo-700" },
-            ].map((stat, i) => (
-              <div key={i} className="glass rounded-2xl p-5 text-center hover:bg-white/5 transition-all duration-300">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mx-auto mb-3 shadow-lg`}>
-                  <stat.icon className="w-5 h-5 text-white" />
+          {/* Stats strip */}
+          <div className="animate-fadeInUp" style={{animationDelay:"0.45s",opacity:0}}>
+            <div className="inline-grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5">
+              {[
+                {prefix:"$",end:3500,suffix:"+",label:"Raised & Donated"},
+                {prefix:"",end:15,suffix:"",label:"Computers Funded"},
+                {prefix:"",end:200,suffix:"+",label:"Students Impacted"},
+                {prefix:"$",end:9000,suffix:"",label:"Total Project Value"},
+              ].map((s,i)=>(
+                <div key={i} className="px-8 py-6 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                  <Stat {...s} />
                 </div>
-                <div className="text-2xl md:text-3xl font-black text-white mb-1">
-                  {stat.prefix}
-                  <CountUp end={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="text-gray-400 text-xs font-medium uppercase tracking-wider">{stat.label}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <a href="#mission" className="flex flex-col items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors">
-          <span className="text-xs uppercase tracking-widest">Scroll</span>
-          <ArrowDown className="w-4 h-4" />
-        </a>
-      </div>
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#030309] to-transparent pointer-events-none" />
     </section>
   );
 }
