@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MapPin, Calendar, CheckCircle2, ArrowRight, Quote, Building2, Laptop, GraduationCap } from "lucide-react";
+import { MapPin, CheckCircle2, ArrowRight, Quote, Building2, Laptop, GraduationCap } from "lucide-react";
+import PhotoPlaceholder from "./PhotoPlaceholder";
 
 function useReveal(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -57,33 +58,42 @@ export default function AfghanProject() {
           </p>
         </div>
 
-        {/* Map / Visual card */}
-        <div className="relative rounded-3xl overflow-hidden mb-20 shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a14] to-blue-950" />
-          <div className="absolute inset-0 grid-bg opacity-20" />
-
-          {/* Floating location badges */}
-          <div className="absolute top-8 left-8 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-white text-sm font-medium">Active Project</span>
-          </div>
-          <div className="absolute top-8 right-8 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-            <MapPin className="w-3 h-3 text-blue-400" />
-            <span className="text-white text-sm font-medium">Jalalabad, Afghanistan</span>
+        {/* Photo grid + stats */}
+        <div className="mb-20">
+          {/* Photo placeholders row */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <PhotoPlaceholder label="Training center exterior" aspectRatio="aspect-video" className="col-span-2" />
+            <div className="flex flex-col gap-4">
+              <PhotoPlaceholder label="Classroom & computers" aspectRatio="aspect-square" />
+              <PhotoPlaceholder label="Students learning" aspectRatio="aspect-square" />
+            </div>
           </div>
 
-          <div className="relative px-8 md:px-16 py-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { label: "Center Capacity", value: "15", unit: "Computers", color: "text-blue-400" },
-              { label: "Coding4Kidz Contribution", value: "$3,500", unit: "of $9,000", color: "text-purple-400" },
-              { label: "Years of Teaching Expertise", value: "18+", unit: "Years (since 2008)", color: "text-teal-400" },
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className={`text-5xl md:text-6xl font-black ${stat.color} mb-2`}>{stat.value}</div>
-                <div className="text-white font-semibold text-lg">{stat.label}</div>
-                <div className="text-gray-400 text-sm">{stat.unit}</div>
-              </div>
-            ))}
+          {/* Stats bar */}
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a14] to-blue-950" />
+            <div className="absolute inset-0 grid-bg opacity-20" />
+            <div className="absolute top-6 left-8 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-white text-sm font-medium">Active Project</span>
+            </div>
+            <div className="absolute top-6 right-8 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+              <MapPin className="w-3 h-3 text-blue-400" />
+              <span className="text-white text-sm font-medium">Jalalabad, Afghanistan</span>
+            </div>
+            <div className="relative px-8 md:px-16 py-14 grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 md:mt-0">
+              {[
+                { label: "Center Capacity", value: "15", unit: "Computers", color: "text-blue-400" },
+                { label: "Coding4Kidz Contribution", value: "$3,500", unit: "of $9,000", color: "text-purple-400" },
+                { label: "Years of Teaching Expertise", value: "18+", unit: "Years (since 2008)", color: "text-teal-400" },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <div className={`text-5xl md:text-6xl font-black ${stat.color} mb-2`}>{stat.value}</div>
+                  <div className="text-white font-semibold text-lg">{stat.label}</div>
+                  <div className="text-gray-400 text-sm">{stat.unit}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -133,6 +143,12 @@ export default function AfghanProject() {
             <p className="text-gray-600 leading-relaxed mb-8">
               The center is designed to be more than just a classroom. It will offer <strong>paid digital services</strong> to the community — including web development, domain registration, video editing, photography, and CCTV solutions — generating revenue to sustain operations and create additional employment for other skilled AYC team members.
             </p>
+
+            {/* Educator photo placeholders */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <PhotoPlaceholder label="Sabawoon · Lead Trainer" aspectRatio="aspect-square" />
+              <PhotoPlaceholder label="Safiullah · Lead Trainer" aspectRatio="aspect-square" />
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               {[

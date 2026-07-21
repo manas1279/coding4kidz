@@ -8,6 +8,7 @@ const links = [
   { href: "#impact", label: "Impact" },
   { href: "#project", label: "Afghanistan Project" },
   { href: "#team", label: "Team" },
+  { href: "#gallery", label: "Gallery" },
   { href: "#partners", label: "Partners" },
 ];
 

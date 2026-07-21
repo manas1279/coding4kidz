@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Code2, Heart, Trophy, Star, Users, Lightbulb } from "lucide-react";
+import PhotoPlaceholder from "./PhotoPlaceholder";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -32,6 +33,27 @@ const achievements = [
   { icon: Lightbulb, text: "Designed a self-sustaining model for long-term impact", color: "text-green-500" },
 ];
 
+const founders = [
+  {
+    name: "Manas Goel",
+    role: "Co-Founder & Co-President",
+    bio: "A passionate advocate for technology education, Manas spearheads fundraising strategy, donor outreach, and international partnerships. From cold-emailing organizations to personally presenting to community groups, he has been the driving force behind Coding4Kidz's financial growth and global reach.",
+    skills: ["Fundraising Strategy", "Partnership Development", "Community Outreach", "Project Management"],
+    gradient: "from-blue-600 to-purple-600",
+    bgGlow: "from-blue-500/20 to-purple-500/20",
+    photoLabel: "Manas Goel · Co-President",
+  },
+  {
+    name: "Kush Shah",
+    role: "Co-Founder & Co-President",
+    bio: "The operational engine behind Coding4Kidz, Kush manages organizational structure, vets partner organizations, tracks impact metrics, and ensures every dollar is deployed effectively. His attention to detail and commitment to transparency has built lasting trust with donors and partners alike.",
+    skills: ["Operations Management", "Impact Assessment", "Partner Vetting", "Strategic Planning"],
+    gradient: "from-purple-600 to-teal-600",
+    bgGlow: "from-purple-500/20 to-teal-500/20",
+    photoLabel: "Kush Shah · Co-President",
+  },
+];
+
 export default function Team() {
   const ref1 = useReveal();
   const ref2 = useReveal();
@@ -60,37 +82,21 @@ export default function Team() {
 
         {/* Co-president cards */}
         <div ref={ref2} className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 opacity-0 translate-y-8 transition-all duration-700 max-w-4xl mx-auto">
-          {[
-            {
-              name: "Co-President",
-              role: "Co-Founder & Co-President",
-              bio: "A passionate advocate for technology education, this co-president spearheads fundraising strategy, donor outreach, and international partnerships. From cold-emailing organizations to personally presenting to community groups, they've been the driving force behind Coding4Kidz's financial growth.",
-              skills: ["Fundraising Strategy", "Partnership Development", "Community Outreach", "Project Management"],
-              emoji: "🚀",
-              gradient: "from-blue-600 to-purple-600",
-              bgGlow: "from-blue-500/20 to-purple-500/20",
-            },
-            {
-              name: "Co-President",
-              role: "Co-Founder & Co-President",
-              bio: "The operational engine behind Coding4Kidz, this co-president manages organizational structure, vets partner organizations, tracks impact metrics, and ensures every dollar is deployed effectively. Their attention to detail and commitment to transparency has built trust with donors and partners alike.",
-              skills: ["Operations Management", "Impact Assessment", "Partner Vetting", "Strategic Planning"],
-              emoji: "⚡",
-              gradient: "from-purple-600 to-teal-600",
-              bgGlow: "from-purple-500/20 to-teal-500/20",
-            },
-          ].map((person, i) => (
+          {founders.map((person, i) => (
             <div key={i} className="relative group">
               {/* Glow background */}
               <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${person.bgGlow} blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
               <div className="relative glass rounded-3xl p-8 border border-white/5 card-hover">
-                {/* Avatar */}
-                <div className="relative w-24 h-24 mx-auto mb-6">
-                  <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${person.gradient} flex items-center justify-center text-4xl shadow-2xl group-hover:scale-105 transition-transform duration-300`}>
-                    {person.emoji}
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-lg bg-green-500 flex items-center justify-center shadow-lg">
+                {/* Photo placeholder */}
+                <div className="relative w-32 h-32 mx-auto mb-6">
+                  <PhotoPlaceholder
+                    label={person.photoLabel}
+                    aspectRatio=""
+                    className="w-32 h-32 rounded-2xl"
+                    dark
+                  />
+                  <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
                     <Star className="w-3 h-3 text-white" />
                   </div>
                 </div>
@@ -146,7 +152,7 @@ export default function Team() {
             </p>
             <div className="text-6xl text-blue-500/20 font-serif absolute -bottom-8 -right-4">&rdquo;</div>
           </div>
-          <p className="text-gray-500 mt-8 font-medium">Coding4Kidz · High School Founders</p>
+          <p className="text-gray-500 mt-8 font-medium">Manas Goel & Kush Shah · Coding4Kidz Co-Presidents</p>
         </div>
       </div>
     </section>
